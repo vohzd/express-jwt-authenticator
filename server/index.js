@@ -7,19 +7,19 @@ const app = express();
 
 const UserModel = require("../model/user.js");
 
-mongoose.connect("mongodb://127.0.0.1/jwt");
+mongoose.connect("mongodb://127.0.0.1/jwt", { useNewUrlParser: true });
 mongoose.connection.on("error", error => console.log(error));
-//mongoose.Promise = global.promise;
 
 require("../middleware/auth.js");
-
-app.use(bodyParser.urlencoded({ extended: false }));
 
 const routes = require("../routes/routes.js");
 const secureRoutes = require("../routes/secure-routes.js");
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 app.use("/", routes);
-app.use("/user", passport.authenticate("jwt", { session: false }), secureRoutes);
+//app.use("/user", passport.authenticate("jwt", { session: false }), secureRoutes);
 app.use(function(err, req, res, next){
   res.status(err.status || 500);
   res.json({ error: err });

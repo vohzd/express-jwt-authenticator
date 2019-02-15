@@ -1,8 +1,27 @@
-const express = require("express");
-const passport = require("passport");
-const jwt = require("jsonwebtoken");
+const express                             = require("express");
+const passport                            = require("passport");
+const jwt                                 = require("jsonwebtoken");
+const { check, validationResult }         = require("express-validator/check");
+
+const UserModel = require("../model/user.js");
 
 const router = express.Router();
+
+router.get("/user/:email", [ check("email").isEmail() ], async (req, res, next) => {
+  const anyErrors = validationResult(req);
+  if (!anyErrors.isEmpty()){
+    res.status(422).json({ errors: anyErrors.array() })
+  }
+  else {
+    let user = await UserModel.find({
+      "email": req.params.email.toLowerCase()
+    });
+    res.send({
+      "userExists": user.length > 0 ? true : false
+    });
+  };
+});
+
 
 router.post("/register", passport.authenticate("register", { session: false }), async (req, res, next) => {
   res.json({
