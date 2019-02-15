@@ -5,8 +5,6 @@ const passport = require("passport");
 const port = 1337;
 const app = express();
 
-const UserModel = require("../model/user.js");
-
 mongoose.connect("mongodb://127.0.0.1/jwt", { useNewUrlParser: true });
 mongoose.connection.on("error", error => console.log(error));
 

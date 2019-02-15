@@ -22,7 +22,6 @@ router.get("/user/:email", [ check("email").isEmail() ], async (req, res, next) 
   };
 });
 
-
 router.post("/register", passport.authenticate("register", { session: false }), async (req, res, next) => {
   res.json({
     message: "success",
