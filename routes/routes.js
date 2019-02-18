@@ -3,7 +3,7 @@ const passport                            = require("passport");
 const jwt                                 = require("jsonwebtoken");
 const { check, validationResult }         = require("express-validator/check");
 
-const UserModel = require("../model/user.js");
+const UserModel                           = require("../model/user.js");
 
 const router = express.Router();
 
