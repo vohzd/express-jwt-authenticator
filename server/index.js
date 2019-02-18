@@ -5,6 +5,11 @@ const passport = require("passport");
 const port = 1337;
 const app = express();
 
+
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 mongoose.connect("mongodb://127.0.0.1/jwt", { useNewUrlParser: true });
 mongoose.connection.on("error", error => console.log(error));
 
@@ -13,8 +18,13 @@ require("../middleware/auth.js");
 const routes = require("../routes/routes.js");
 const secureRoutes = require("../routes/secure-routes.js");
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use((req, res, next) =>{
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS");
+  next();
+});
 
 app.use("/", routes);
 //app.use("/user", passport.authenticate("jwt", { session: false }), secureRoutes);
