@@ -34,13 +34,13 @@ passport.use("login", new localStrategy({
   try {
     const user = await UserModel.findOne({ email });
     if (!user){
-      return done(null, false, { message: "user not found" });
+      return done(null, false, { message: "User not found", success: false, code: 404 });
     }
     const validate = await user.isValidPassword(password);
     if (!validate){
-      return done(null, false, { message: "Wrong Password" });
+      return done(null, false, { message: "Wrong Password", success: false, code: 401 });
     }
-    return done(null, user, { message: "Logged in successfully" });
+    return done(null, user, { message: "Logged in successfully", success: true, code: 200 });
   }
   catch (e) { return done(e); }
 }));

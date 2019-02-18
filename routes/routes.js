@@ -31,7 +31,20 @@ router.post("/register", passport.authenticate("register", { session: false }), 
 
 router.post("/login", async (req, res, next) => {
   passport.authenticate("login", async (err, user, info) => {
+    console.log("we are here");
+    if (info.success){
+      console.log("something good happened")
+    }
+    else {
+      res.status(info.code).json({ success : info.success, message : info.message });
+    }
+
+
+    /*
     try {
+      console.log(err);
+      console.log(user);
+      console.log(info);
       if (err || !user){
         const error = new Error("An Error occured");
         return next(error);
@@ -46,8 +59,10 @@ router.post("/login", async (req, res, next) => {
       return res.json({ token });
     }
     catch (error){
+      console.log("actually shit went wrong");
+      console.log(error);
       return next(error);
-    }
+    }*/
   })(req, res, next)
 });
 
