@@ -25,17 +25,35 @@ router.get("/user/:email", [ check("email").isEmail() ], async (req, res, next) 
 router.post("/register", passport.authenticate("register", { session: false }), async (req, res, next) => {
   res.json({
     message: "success",
-    user: req.user
+    user: {
+      _id: res.user._id,
+      email: res.user.email
+    }
   });
 });
 
 router.post("/login", async (req, res, next) => {
   passport.authenticate("login", async (err, user, info) => {
     console.log("we are here");
+    console.log(err);
+    console.log(user);
+    console.log(info);
     if (info.success){
       console.log("something good happened")
+
+      req.login(user, { session: false }, (error) => {
+        console.log("logging in....");
+                console.log(error);
+      });
+      console.log("sending...")
+      res.json({
+        success: true,
+        token: jwt.sign({ user: { _id: user._id, email: user.email } }, "secret_token")
+      })
+      //res.status(info.code).json({ success : info.success, message : info.message });
     }
     else {
+      console.log("actually.... we're here")
       res.status(info.code).json({ success : info.success, message : info.message });
     }
 
