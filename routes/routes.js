@@ -5,7 +5,48 @@ const { check, validationResult }         = require("express-validator/check");
 
 const UserModel                           = require("../model/user.js");
 
-const router = express.Router();
+const { secret }                          = require("../config/keys.js");
+
+const router                               = express.Router();
+
+/*
+router.get("/checkAuthState", passport.authenticate("jwt", { session: false }), (req, res) => {
+  console.log("checking auth state....");
+  console.log(req.user);
+}));
+
+
+
+
+
+router.get("/checkAuthState", (req, res) => {
+  console.log(req.headers);
+  console.log("ABOUT TO TEST");
+  try {
+    passport.authenticate("jwt", { session: false }, (req2, res2) => {
+      console.log("PASSPORT HAS DONE SOMETHING");
+      console.log(req2);
+    });
+  }
+  catch (e){
+    console.log(e);
+  }
+
+
+  res.send("CHECKED AUTH STATE");
+});
+
+
+
+
+router.get("/checkAuthState", passport.authenticate("jwt", { session: false}), (req, res) => {
+  res.status(200).send({ user });
+});
+*/
+router.get('/checkAuthState', passport.authenticate('jwt', { session: false }), (req, res) => {
+    console.log("WELCOME BACK!!!!")
+    res.status(200).send(req.user);
+});
 
 router.get("/user/:email", [ check("email").isEmail() ], async (req, res, next) => {
   const anyErrors = validationResult(req);
@@ -16,6 +57,7 @@ router.get("/user/:email", [ check("email").isEmail() ], async (req, res, next) 
     let user = await UserModel.find({
       "email": req.params.email.toLowerCase()
     });
+    console.log("checking user...");
     res.send({
       "userExists": user.length > 0 ? true : false
     });
@@ -23,65 +65,50 @@ router.get("/user/:email", [ check("email").isEmail() ], async (req, res, next) 
 });
 
 router.post("/register", passport.authenticate("register", { session: false }), async (req, res, next) => {
-  res.json({
-    message: "success",
-    user: {
-      _id: res.user._id,
-      email: res.user.email
-    }
-  });
+  console.log("received a request to regsiter a user....")
+  try {
+    res.json({
+      message: "success",
+      user: {
+        _id: req.user._id,
+        email: req.user.email
+      }
+    });
+  }
+  catch (e){
+    console.log("borked");
+    console.log(e);
+  }
 });
 
 router.post("/login", async (req, res, next) => {
+
   passport.authenticate("login", async (err, user, info) => {
-    console.log("we are here");
-    console.log(err);
-    console.log(user);
-    console.log(info);
-    if (info.success){
-      console.log("something good happened")
 
-      req.login(user, { session: false }, (error) => {
-        console.log("logging in....");
-                console.log(error);
-      });
-      console.log("sending...")
-      res.json({
-        success: true,
-        token: jwt.sign({ user: { _id: user._id, email: user.email } }, "secret_token")
-      })
-      //res.status(info.code).json({ success : info.success, message : info.message });
-    }
-    else {
-      console.log("actually.... we're here")
-      res.status(info.code).json({ success : info.success, message : info.message });
-    }
-
-
-    /*
-    try {
-      console.log(err);
-      console.log(user);
-      console.log(info);
-      if (err || !user){
-        const error = new Error("An Error occured");
-        return next(error);
+    req.login(user, { session: false }, (error) => {
+      if (error){
+        res.status(400).send({ error });
       }
-      req.login(user, { session: false }, async (error) => {
-        if (error){
-          return next(error);
-        }
-      });
-      const body = { _id: user._id, email: user.email };
-      const token = jwt.sign({ user: body }, "secret_token");
-      return res.json({ token });
+    });
+
+    const cookieOptions = {
+      maxAge: 1000 * 60 * 1,
+      httpOnly: true,
+      secure: false,
+      signed: false,
+      sameSite: false
+    };
+
+    const userOptions = {
+      user: user.email
     }
-    catch (error){
-      console.log("actually shit went wrong");
-      console.log(error);
-      return next(error);
-    }*/
-  })(req, res, next)
+
+    const token = jwt.sign(userOptions, secret, { expiresIn: "1hr" });
+
+    res.cookie("jwt", token, cookieOptions);
+    res.status(200).send(user.email);
+
+  })(req, res)
 });
 
 module.exports = router;

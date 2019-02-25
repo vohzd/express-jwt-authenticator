@@ -4,27 +4,40 @@ const UserModel = require("../model/user.js");
 const jwtStrategy = require("passport-jwt").Strategy;
 const extractJwt = require("passport-jwt").ExtractJwt;
 
+const { secret } = require("../config/keys.js");
+
 passport.use(new jwtStrategy({
-  secretOrKey: "secret-phrase",
-  jwtFromRequest: extractJwt.fromUrlQueryParameter("secret_token")
-}, async (token, done) => {
-  try {
-    return done(null, token.user);
+  jwtFromRequest: req => req.cookies.jwt,
+  secretOrKey: secret,
+  //jwtFromRequest: extractJwt.fromUrlQueryParameter("secret_token")
+},
+(token, done) => {
+  /*
+  console.log(token);
+  if (Date.now() > token.expires){
+    return done("Expired.");
   }
-  catch (error) {
-    done (error);
-  }
+  console.log(token);*/
+  return done(null, token.user);
 }))
 
 passport.use("register", new localStrategy({
   usernameField: "email",
   passwordField: "password"
 }, async (email, password, done) => {
+  console.log("trying to register...");
+  console.log(email);
   try {
+    console.log("nah actually this was successful")
     const user = await UserModel.create({ email, password });
+    console.log("user created...")
+    console.log(user);
     return done(null, user);
   }
-  catch (e) { done(e) }
+  catch (e) {
+    console.log("caught an error??")
+    done(e)
+  }
 }));
 
 passport.use("login", new localStrategy({
