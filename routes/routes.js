@@ -92,7 +92,7 @@ router.post("/login", async (req, res, next) => {
     });
 
     const cookieOptions = {
-      maxAge: 1000 * 60 * 1,
+      maxAge: 1000 * 60 * 10,
       httpOnly: true,
       secure: false,
       signed: false,
