@@ -3,47 +3,13 @@ const passport                            = require("passport");
 const jwt                                 = require("jsonwebtoken");
 const { check, validationResult }         = require("express-validator/check");
 
-const UserModel                           = require("../model/user.js");
+const UserModel                           = require("../../model/user.js");
 
-const { secret }                          = require("../config/keys.js");
+const { secret }                          = require("../../config/keys.js");
 
-const router                               = express.Router();
+const router                              = express.Router();
 
-/*
 router.get("/checkAuthState", passport.authenticate("jwt", { session: false }), (req, res) => {
-  console.log("checking auth state....");
-  console.log(req.user);
-}));
-
-
-
-
-
-router.get("/checkAuthState", (req, res) => {
-  console.log(req.headers);
-  console.log("ABOUT TO TEST");
-  try {
-    passport.authenticate("jwt", { session: false }, (req2, res2) => {
-      console.log("PASSPORT HAS DONE SOMETHING");
-      console.log(req2);
-    });
-  }
-  catch (e){
-    console.log(e);
-  }
-
-
-  res.send("CHECKED AUTH STATE");
-});
-
-
-
-
-router.get("/checkAuthState", passport.authenticate("jwt", { session: false}), (req, res) => {
-  res.status(200).send({ user });
-});
-*/
-router.get('/checkAuthState', passport.authenticate('jwt', { session: false }), (req, res) => {
     console.log("WELCOME BACK!!!!")
     res.status(200).send(req.user);
 });
@@ -110,8 +76,6 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.get("/logout", async (req, res, next) => {
-
-  console.log("OH HAI.... plz log me out...");
 
     const cookieOptions = {
       maxAge: 1000 * 60 * 1,
