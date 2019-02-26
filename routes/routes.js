@@ -93,10 +93,8 @@ router.post("/login", async (req, res, next) => {
 
     const cookieOptions = {
       maxAge: 1000 * 60 * 10,
-      httpOnly: true,
-      secure: false,
-      signed: false,
-      sameSite: false
+      sameSite: false,
+      httpOnly: true
     };
 
     const userOptions = {
@@ -109,6 +107,20 @@ router.post("/login", async (req, res, next) => {
     res.status(200).send(user.email);
 
   })(req, res)
+});
+
+router.get("/logout", async (req, res, next) => {
+
+  console.log("OH HAI.... plz log me out...");
+
+    const cookieOptions = {
+      maxAge: 1000 * 60 * 1,
+      httpOnly: true
+    };
+
+    res.cookie("jwt", "loggedout", cookieOptions);
+    res.status(200).send("logged-out");
+
 });
 
 module.exports = router;

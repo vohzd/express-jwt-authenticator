@@ -29,10 +29,11 @@ app.use((req, res, next) => {
 
 app.use("/", routes);
 //app.use("/user", passport.authenticate("jwt", { session: false }), secureRoutes);
+/*
 app.use(function(err, req, res, next){
   res.status(err.status || 500);
   res.json({ error: err });
-});
+});*/
 app.listen(port, () => {
   console.log(`working on ${port}`);
 });
