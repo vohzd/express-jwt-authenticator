@@ -41,7 +41,7 @@ const userRoutes                     = require("../routes/user/index.js");
 const emailRoutes                    = require("../routes/email/index.js");
 
 app.use("/", userRoutes);
-app.use("/email", emailRoutes);
+app.use("/", emailRoutes);
 
 /*
  *   START SERVER
